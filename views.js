@@ -429,6 +429,7 @@ function drawRoute(key) {
   L.polyline(latlngs, { color: col, weight: 5.5, opacity: 1, lineJoin: 'round', lineCap: 'round' }).addTo(layerRoute);
   drawStopsFor(key);
   map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
+  try { $('#map').classList.toggle('route-flipped', !!(activeLine && activeLine.r && activeLine.r[activeRoute] && activeLine.r[activeRoute].s === 'V')); } catch (e) {}
 }
 function drawStopsFor(key) {
   var stops = D.R[key] || [];
@@ -468,6 +469,7 @@ function tapStop(si, key, latlng) {
 }
 function clearRoute() {
   layerRoute.clearLayers(); layerStops.clearLayers(); layerWalk.clearLayers(); layerFlags.clearLayers();
+  try { $('#map').classList.remove('route-flipped'); } catch (e) {}
   activeKey = null; etaSubs = []; busRoute = null; syncBusLayer();
 }
 var lastPopup = null;
