@@ -91,19 +91,42 @@ function nearestArrivals(limit, maxM) {
 
 /* =========================== LÍNEAS: TIRA FLOTANTE + RECORRIDO =========================== */
 var activeLine = null, activeKey = null, activeRoute = 0, etaSubs = [];
+var stripFamily = null;
 function renderLineStrip() {
   var box = $('#stripScroll');
   if (!box) return;
-  box.innerHTML = D.lineas.map(function (l, i) {
-    return '<button class="lc' + (activeLine && activeLine.i === l.i ? ' on' : '') + '" type="button" data-strip="' + l.i + '" style="--i:' + Math.min(i, 24) + ';background:' + l.c + '">' +
-      l.n + '</button>';
-  }).join('');
+  if (stripFamily === null) {
+    var fams = [];
+    D.lineas.forEach(function (l) {
+      var n = parseInt(l.n, 10);
+      if (isNaN(n)) return;
+      var f = Math.floor(n / 10) * 10;
+      if (fams.indexOf(f) < 0) fams.push(f);
+    });
+    fams.sort(function (a, b) { return a - b; });
+    box.innerHTML =
+      '<button class="lc fam" type="button" data-strip="fam:all">Todas</button>' +
+      fams.map(function (f) {
+        return '<button class="lc fam" type="button" data-strip="fam:' + f + '">' + f + 's</button>';
+      }).join('');
+    return;
+  }
+  var lines = stripFamily === -1 ? D.lineas : D.lineas.filter(function (l) {
+    var n = parseInt(l.n, 10);
+    return !isNaN(n) && Math.floor(n / 10) * 10 === stripFamily;
+  });
+  box.innerHTML =
+    '<button class="lc fam back" type="button" data-strip="fam:back">Familias</button>' +
+    lines.map(function (l, i) {
+      return '<button class="lc' + (activeLine && activeLine.i === l.i ? ' on' : '') + '" type="button" data-strip="' + l.i + '" style="--i:' + Math.min(i, 24) + ';background:' + l.c + '">' +
+        l.n + '</button>';
+    }).join('');
 }
 function toggleStrip(on) {
   var s = $('#lineStrip');
   if (!s) return;
   var open = on == null ? s.classList.contains('hidden') : !!on;
-  if (open) { renderLineStrip(); s.classList.remove('hidden'); }
+  if (open) { stripFamily = null; renderLineStrip(); s.classList.remove('hidden'); }
   else s.classList.add('hidden');
 }
 function dirTitleCase(s) {
@@ -135,6 +158,12 @@ function renderDirSense() {
    atrapado en una ventana más; ahora el sentido se cambia tocando "De … a …"
    dentro de la propia tarjeta. */
 function selectLineStrip(lineId) {
+  if (String(lineId).indexOf('fam:') === 0) {
+    var val = String(lineId).slice(4);
+    if (val === 'back' || val === 'all') stripFamily = null; else stripFamily = parseInt(val, 10);
+    renderLineStrip();
+    return;
+  }
   var l = D.lineas.filter(function (x) { return String(x.i) === String(lineId); })[0];
   if (!l) return;
   activeLine = l;
@@ -256,7 +285,7 @@ function renderLineCard() {
   $('#lcBadge').style.background = l.c;
   $('#lcName').textContent = 'Línea ' + l.n;
   var e = dirEnds(r);
-  $('#lcDir').textContent = (r.s === 'V' ? 'Vuelta' : 'Ida') + ' · ' + (e[1] ? e[0] + ' ' + e[1] : e[0]);
+  $('#lcDir').textContent = (r.s === 'V' ? 'Vuelta' : 'Ida') + '\n' + (e[1] ? e[0] + ' -> ' + e[1] : e[0]);
   $('#lcFlip').classList.toggle('hide', l.r.length < 2);
   /* el lado derecho de la tarjeta: dibujo del recorrido completo */
   $('#lcMap').innerHTML = routeMiniSvg(r.t, 96, 56);
