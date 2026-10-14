@@ -97,24 +97,36 @@ function renderLineStrip() {
   if (!box) return;
   if (stripFamily === null) {
     var fams = [];
+    var hasEsp = false;
     D.lineas.forEach(function (l) {
       var n = parseInt(l.n, 10);
-      if (isNaN(n)) return;
-      var f = Math.floor(n / 10) * 10;
-      if (fams.indexOf(f) < 0) fams.push(f);
+      if (isNaN(n)) hasEsp = true;
+      else {
+        var f = Math.floor(n / 10) * 10;
+        if (fams.indexOf(f) < 0) fams.push(f);
+      }
     });
     fams.sort(function (a, b) { return a - b; });
     box.innerHTML =
       '<button class="lc fam" type="button" data-strip="fam:all">Todas</button>' +
       fams.map(function (f) {
         return '<button class="lc fam" type="button" data-strip="fam:' + f + '">' + f + 's</button>';
-      }).join('');
+      }).join('') +
+      (hasEsp ? '<button class="lc fam" type="button" data-strip="fam:esp">Especiales</button>' : '');
     return;
   }
-  var lines = stripFamily === -1 ? D.lineas : D.lineas.filter(function (l) {
-    var n = parseInt(l.n, 10);
-    return !isNaN(n) && Math.floor(n / 10) * 10 === stripFamily;
-  });
+  var lines;
+  if (stripFamily === 'esp') {
+    lines = D.lineas.filter(function (l) { return isNaN(parseInt(l.n, 10)); });
+  } else if (stripFamily === 'all' || stripFamily === -1) {
+    lines = D.lineas.slice();
+  } else {
+    lines = D.lineas.filter(function (l) {
+      var n = parseInt(l.n, 10);
+      return !isNaN(n) && Math.floor(n / 10) * 10 === stripFamily;
+    });
+  }
+  lines.sort(function (a, b) { return String(a.n).localeCompare(String(b.n), 'es', { numeric: true }); });
   box.innerHTML =
     '<button class="lc fam back" type="button" data-strip="fam:back">Familias</button>' +
     lines.map(function (l, i) {
@@ -160,7 +172,10 @@ function renderDirSense() {
 function selectLineStrip(lineId) {
   if (String(lineId).indexOf('fam:') === 0) {
     var val = String(lineId).slice(4);
-    if (val === 'back' || val === 'all') stripFamily = null; else stripFamily = parseInt(val, 10);
+    if (val === 'back') stripFamily = null;
+    else if (val === 'all') stripFamily = 'all';
+    else if (val === 'esp') stripFamily = 'esp';
+    else stripFamily = parseInt(val, 10);
     renderLineStrip();
     return;
   }
@@ -289,6 +304,7 @@ function renderLineCard() {
   $('#lcFlip').classList.toggle('hide', l.r.length < 2);
   /* el lado derecho de la tarjeta: dibujo del recorrido completo */
   $('#lcMap').innerHTML = routeMiniSvg(r.t, 96, 56);
+  $('#lcMap').classList.toggle('flip', r.s === 'V');
   $('#lcFav').classList.toggle('on', store.get('favLines', []).indexOf(l.i) >= 0);
   refreshCardEta();
   syncWatchUI();

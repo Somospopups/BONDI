@@ -491,7 +491,7 @@ function wire() {
   $('#dirFlip').addEventListener('click', flipSense);
   $('#dirSense').addEventListener('click', function () { chooseRoute(activeRoute); });
   $('#dirGo').addEventListener('click', function () { chooseRoute(activeRoute); });
-  $('#lcClose').addEventListener('click', closeLineCard);
+  $('#lcClose').addEventListener('click', function () { hideLineCard(); });
   $('#lcFlip').addEventListener('click', flipSenseCard);
   $('#lcStops').addEventListener('click', function () {
     if (!activeLine) return;
