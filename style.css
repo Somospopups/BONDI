@@ -86,9 +86,7 @@ h1,h2,h3,h4,p{margin:0}
 
 /* ============================ MAPA ============================ */
 #app{position:fixed;inset:0;overflow:hidden}
-#map{position:absolute;inset:0;background:#E9E5DC;z-index:1;transition:filter .3s,transform .3s ease}
-#map.route-flipped{transform:rotate(180deg)}
-#map.route-flipped .leaflet-control-container{transform:rotate(180deg)}
+#map{position:absolute;inset:0;background:#E9E5DC;z-index:1;transition:filter .3s}
 body.dark #map{background:#0E141B}
 .leaflet-container{font-family:var(--font);background:#E9E5DC;outline:none}
 body.dark .leaflet-container{background:#0E141B}
