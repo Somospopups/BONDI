@@ -790,3 +790,6 @@ body.dark #loader{background:rgba(10,15,20,.72)}
 
 #lcMap{transition:transform .3s ease}
 #lcMap.flip{transform:rotate(180deg)}
+
+#lcFlip{display:none !important}
+#lcMap{cursor:pointer}

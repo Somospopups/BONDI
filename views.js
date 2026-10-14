@@ -298,9 +298,9 @@ function renderLineCard() {
   var r = l.r[activeRoute] || l.r[0];
   $('#lcBadge').textContent = l.n;
   $('#lcBadge').style.background = l.c;
-  $('#lcName').textContent = 'Línea ' + l.n;
+  $('#lcName').textContent = e[0];                       /* origen (misma fuente/tamaño que el tótulo) */
   var e = dirEnds(r);
-  $('#lcDir').textContent = (r.s === 'V' ? 'Vuelta' : 'Ida') + '\n' + (e[1] ? e[0] + ' -> ' + e[1] : e[0]);
+  $('#lcDir').textContent = (e[1] ? e[1] : '');          /* destino en gris */
   $('#lcFlip').classList.toggle('hide', l.r.length < 2);
   /* el lado derecho de la tarjeta: dibujo del recorrido completo */
   $('#lcMap').innerHTML = routeMiniSvg(r.t, 96, 56);

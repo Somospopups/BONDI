@@ -493,6 +493,7 @@ function wire() {
   $('#dirGo').addEventListener('click', function () { chooseRoute(activeRoute); });
   $('#lcClose').addEventListener('click', function () { hideLineCard(); });
   $('#lcFlip').addEventListener('click', flipSenseCard);
+$('#lcMap').addEventListener('click', flipSenseCard);
   $('#lcStops').addEventListener('click', function () {
     if (!activeLine) return;
     openView('v-line');
