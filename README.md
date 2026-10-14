@@ -4,7 +4,7 @@ PWA para viajar en bondi por Córdoba Capital: líneas, paradas, próximos arrib
 horarios y posiciones en vivo de la flota. **JavaScript vanilla + Leaflet, sin
 frameworks y sin build**: se edita un archivo y se publica.
 
-- **Web:** https://somospopups.github.io/Viajo/
+- **Web:** https://somospopups.github.io/BONDI/
 - **Versión:** `APP_VERSION` en `core.js` (hoy `v187`)
 - **Datos en vivo:** relay propio en Cloudflare Worker (`relay/`) contra la API de TU BONDI
 
