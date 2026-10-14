@@ -142,9 +142,7 @@ function selectLineStrip(lineId) {
   activeRoute = (saved != null && l.r[saved]) ? saved : 0;
   if (!l.r[activeRoute]) activeRoute = 0;
   chooseRoute(null);   /* cierra la tira, muestra la tarjeta y dibuja la ruta */
-  toast('Línea ' + l.n + ' elegida',
-    'Tocá una parada del recorrido y te avisamos cuándo salir de tu casa',
-    'stop', 'var(--blue-700)');
+  /* Sin popup invasivo: la elección se confirma en el recorrido */
 }
 function openDirModal(lineId) {
   var l = D.lineas.filter(function (x) { return String(x.i) === String(lineId); })[0];

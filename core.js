@@ -1,7 +1,7 @@
 /* Bondi · núcleo: iconos, utilidades, índices, mapa y bondis en vivo */
 'use strict';
 
-var APP_VERSION = 'v195';
+var APP_VERSION = 'v188';
 var D = window.DATA;
 function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -665,3 +665,35 @@ function synthArrival(key, stopIdx) {
   var phase = (nowM + hash(key + stopIdx)) % freq;
   return { min: phase === 0 ? freq : freq - phase, real: false };
 }
+
+renderLiveBadge = function () {
+  var el = document.getElementById('liveBadge');
+  if (!el) return;
+  if (!busRoute) {
+    var h0 = '<span class="lb-dot"></span>elegi una linea para ver bondis';
+    if (el._html !== h0) { el.innerHTML = h0; el._html = h0; }
+    el.className = 'live-badge off';
+    el.setAttribute('data-on', '0');
+    return;
+  }
+  var visibles = buses.filter(busVisible).length;
+  var html;
+  if (!live.started || !live.srcTs) html = '<span class="lb-dot"></span>conectando...';
+  else if (live.ok && live.ts && Date.now() - live.ts < LIVE_STALE) {
+    var now = Date.now();
+    var edades = buses.map(function (b) { return now - (b.dataTs || b.seenAt || now); })
+      .sort(function (a, b) { return a - b; });
+    var age = edades.length ? Math.round(edades[Math.floor(edades.length / 2)] / 1000)
+                            : Math.round((now - live.ts) / 1000);
+    if (visibles > 0) html = '<span class="lb-dot"></span>en vivo - hace ' + (age < 100 ? age : '99+') + ' s - ' + visibles + ' bondis de esta linea';
+    else html = '<span class="lb-dot"></span>sin bondis reportados ahora en esta linea';
+  } else html = '<span class="lb-dot"></span>sin datos en vivo';
+  var on = html.indexOf('sin ') < 0 && html.indexOf('conectando') < 0 && visibles > 0;
+  el.className = 'live-badge' + (on ? ' on' : ' off');
+  el.setAttribute('data-on', on ? '1' : '0');
+  if (el._html !== html) { el.innerHTML = html; el._html = html; }
+};
+var _origSyncBusLayer = syncBusLayer;
+syncBusLayer = function () { _origSyncBusLayer(); try { renderLiveBadge(); } catch (e) {} };
+setTimeout(renderLiveBadge, 0);
+
